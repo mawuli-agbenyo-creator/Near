@@ -32,7 +32,17 @@ class imates extends Controller
                     $requestData = $request->all();
                     $requestData['External_inmateID'] = $uuid1;
                     $requestData['inmateID'] = $uuid2;
-                    
+                  
+
+                    if ($request->hasFile('personalPhoto')) {
+                       
+                        $requestData['personalPhoto'] = $request->file('personalPhoto')->store('images', 'public');
+                    }
+
+                    return response()->json([
+                        'status' => false,
+                        'message' =>  $requestData['personalPhoto'],
+                    ], 400);
                 $inmate = imateintake::create($requestData);
                 if ($inmate) {
                     return response()->json([
@@ -48,7 +58,7 @@ class imates extends Controller
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => false,
+                'status' => 'false',
                 'message' => $th->getMessage()
             ], 500);
         }    
