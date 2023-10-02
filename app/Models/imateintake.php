@@ -11,7 +11,7 @@ class imateintake extends Model implements Auditable
 {
     protected $table = 'imates';
     use HasFactory, AuditableTrait;
-    protected $hidden = ['id', 'External_inmateID', 'created_at', 'updated_at'];
+    protected $hidden = ['id',  'created_at', 'updated_at'];
     protected $guarded = [];
 
 }

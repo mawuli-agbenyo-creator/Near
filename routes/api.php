@@ -27,7 +27,8 @@ Route::post('/login', [AuthController::class, 'loginUser']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
 
-Route::get('/inmates/{identifier}', [imates::class, 'search']);
+Route::get('/all/inmates', [imates::class, 'search']);
+Route::post('/update/inmates/', [imates::class, 'update']);
 
     
 });

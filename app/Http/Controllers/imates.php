@@ -34,15 +34,15 @@ class imates extends Controller
                     $requestData['inmateID'] = $uuid2;
                   
 
-                    if ($request->hasFile('personalPhoto')) {
+                    // if ($request->hasFile('personalPhoto')) {
                        
-                        $requestData['personalPhoto'] = $request->file('personalPhoto')->store('images', 'public');
-                    }
+                    //     $requestData['personalPhoto'] = $request->file('personalPhoto')->store('images', 'public');
+                    // }
 
-                    return response()->json([
-                        'status' => false,
-                        'message' =>  $requestData['personalPhoto'],
-                    ], 400);
+                    // return response()->json([
+                    //     'status' => false,
+                    //     'message' =>  $requestData['personalPhoto'],
+                    // ], 400);
                 $inmate = imateintake::create($requestData);
                 if ($inmate) {
                     return response()->json([
@@ -67,29 +67,30 @@ class imates extends Controller
 
 
 
-    public function search(Request $request, $identifier)
+    public function search(Request $request)
     {
             try {
                 
-                // Validation rules for the identifier (e.g., inmateID)
-                $validationRules = [
-                    'identifier' => 'required|string', // Adjust as needed
-                ];
-                    // Validate the user input
-                $validator = Validator::make(['identifier' => $identifier], $validationRules);
+                // // Validation rules for the identifier (e.g., inmateID)
+                // $validationRules = [
+                //     'identifier' => 'required|string', // Adjust as needed
+                // ];
+                //     // Validate the user input
+                // $validator = Validator::make(['identifier' => $identifier], $validationRules);
 
-                if ($validator->fails()) {
-                    // If validation fails, return validation errors
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Validation failed',
-                        'errors' => $validator->errors(),
-                    ], 422); // You can use the appropriate HTTP status code
-                }
+                // if ($validator->fails()) {
+                //     // If validation fails, return validation errors
+                //     return response()->json([
+                //         'status' => false,
+                //         'message' => 'Validation failed',
+                //         'errors' => $validator->errors(),
+                //     ], 422); // You can use the appropriate HTTP status code
+                // }
 
 
                             // Search for the inmate based on the validated identifier
-                $inmate = imateintake::where('inmateID', $identifier)->first();
+                // $inmate = imateintake::where('inmateID', $identifier)->first();
+                $inmate = imateintake::all();
 
                 if (!$inmate) {
                     // If the inmate is not found, return an appropriate response
@@ -115,5 +116,49 @@ class imates extends Controller
                     'message' => $th->getMessage()
                 ], 500);
             }
+    }
+
+
+
+
+    public function update(imatesReq $request)
+    {
+        try {
+                             
+            $validator = Validator::make($request->all(), $request->rules());
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422); // You can use the appropriate HTTP status code
+            }
+
+            $inmate = imateintake::where('External_inmateID', $request->External_inmateID)->first();
+
+            if (!$inmate) {
+               
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Inmate not found'
+                ], 404);
+            }
+        
+            // Update the inmate data
+            $inmate->update($request->all());
+
+            
+            return response()->json([
+                'status' => true,
+                'message' => 'Inmate data updated successfully'
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }
